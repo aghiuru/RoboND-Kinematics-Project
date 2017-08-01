@@ -1,4 +1,5 @@
 from sympy import *
+from sympy.solvers import solve
 from time import time
 from mpmath import radians
 import tf
@@ -146,14 +147,29 @@ def test_code(test_case):
                    [sin(q4) * cos(alpha3), cos(q4) * sin(alpha3), cos(alpha3), cos(alpha3) * d4],
                    [0, 0, 0, 1]])
 
+    T4_5 = Matrix([[cos(q5), -sin(q5), 0, a4],
+                   [sin(q5) * cos(alpha4), cos(q5) * cos(alpha4), -sin(alpha4), -sin(alpha4) * d5],
+                   [sin(q5) * cos(alpha4), cos(q5) * sin(alpha4), cos(alpha4), cos(alpha4) * d5],
+                   [0, 0, 0, 1]])
+
+    T5_6 = Matrix([[cos(q6), -sin(q6), 0, a5],
+                   [sin(q6) * cos(alpha5), cos(q6) * cos(alpha5), -sin(alpha5), -sin(alpha5) * d6],
+                   [sin(q6) * cos(alpha5), cos(q6) * sin(alpha5), cos(alpha5), cos(alpha5) * d6],
+                   [0, 0, 0, 1]])
+
+    T6_G = Matrix([[cos(q7), -sin(q7), 0, a6],
+                   [sin(q7) * cos(alpha6), cos(q7) * cos(alpha6), -sin(alpha6), -sin(alpha6) * d7],
+                   [sin(q7) * cos(alpha6), cos(q7) * sin(alpha6), cos(alpha6), cos(alpha6) * d7],
+                   [0, 0, 0, 1]])
 
     R_total = r_x(yaw) * r_y(pitch) * r_z(roll)
     R_corr = r_y(+np.pi/2) * r_x(-np.pi)
+    R_rpy = R_total * R_corr
 
     p = Matrix([[px], [py], [pz]])
     n = Matrix([[0], [0], [d7]])
 
-    wc = simplify(p - R_total * R_corr * n).subs(s)
+    wc = simplify(p - R_rpy * n).subs(s)
 
     p_wc = (float(wc[0]), float(wc[1]), float(wc[2]))
 
@@ -194,6 +210,20 @@ def test_code(test_case):
 
     theta3 = (pi / 2 + theta31 - theta32).subs(s)
     print('theta3: ', theta3)
+
+    R0_3 = (T0_1 * T1_2 * T2_3)[:3, :3]
+    R0_3t = R0_3.transpose()
+
+    lhs = R3_6 = (T3_4 * T4_5 * T5_6)[:3, :3]
+
+    rhs = simplify(R0_3t * R_rpy).subs(s).subs({q1: theta1,
+                                                q2: theta2,
+                                                q3: theta3})
+    print('---------')
+    print(lhs.subs(s))
+    print(rhs)
+
+    print(solve(lhs - rhs, [q4, q5, q6]))
 
     theta4 = 0
     theta5 = 0
