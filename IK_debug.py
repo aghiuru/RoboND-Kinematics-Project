@@ -36,20 +36,24 @@ def r_x(a):
                    [sin(a),  cos(a), 0],
                    [     0,       0, 1]])
 
-#    return Matrix([[cos(a), -sin(a), 0, 0],
-#                   [sin(a),  cos(a), 0, 0],
-#                   [     0,       0, 1, 0],
-#                   [     0,       0, 0, 1]])
+def r_x_s():
+    y = symbols('y')
+    return Matrix([[cos(y), -sin(y), 0, 0],
+                   [sin(y),  cos(y), 0, 0],
+                   [     0,       0, 1, 0],
+                   [     0,       0, 0, 1]])
 
 def r_y(a):
     return Matrix([[ cos(a), 0, sin(a)],
                    [      0, 1,      0],
                    [-sin(a), 0, cos(a)]])
 
-    # return Matrix([[ cos(a), 0, sin(a), 0],
-    #                [      0, 1,      0, 0],
-    #                [-sin(a), 0, cos(a), 0],
-    #                [      0, 0,      0, 1]])
+def r_y_s():
+    p = symbols('p')
+    return Matrix([[ cos(p), 0, sin(p), 0],
+                   [      0, 1,      0, 0],
+                   [-sin(p), 0, cos(p), 0],
+                   [      0, 0,      0, 1]])
 
 
 def r_z(a):
@@ -57,11 +61,12 @@ def r_z(a):
                    [ 0, cos(a), -sin(a)],
                    [ 0, sin(a),  cos(a)]])
 
-    # return Matrix([[ 1,      0,       0, 0],
-    #                [ 0, cos(a), -sin(a), 0],
-    #                [ 0, sin(a),  cos(a), 0],
-    #                [ 0,      0,       0, 1]])
-
+def r_z_s():
+    r = symbols('r')
+    return Matrix([[ 1,      0,       0, 0],
+                   [ 0, cos(r), -sin(r), 0],
+                   [ 0, sin(r),  cos(r), 0],
+                   [ 0,      0,       0, 1]])
 
 def test_code(test_case):
     ## Set up code
@@ -129,47 +134,46 @@ def test_code(test_case):
 
     T0_1 = Matrix([[cos(q1), -sin(q1), 0, a0],
                    [sin(q1) * cos(alpha0), cos(q1) * cos(alpha0), -sin(alpha0), -sin(alpha0) * d1],
-                   [sin(q1) * cos(alpha0), cos(q1) * sin(alpha0), cos(alpha0), cos(alpha0) * d1],
+                   [sin(q1) * sin(alpha0), cos(q1) * sin(alpha0), cos(alpha0), cos(alpha0) * d1],
                    [0, 0, 0, 1]])
 
     T1_2 = Matrix([[cos(q2), -sin(q2), 0, a1],
                    [sin(q2) * cos(alpha1), cos(q2) * cos(alpha1), -sin(alpha1), -sin(alpha1) * d2],
-                   [sin(q2) * cos(alpha1), cos(q2) * sin(alpha1), cos(alpha1), cos(alpha1) * d2],
+                   [sin(q2) * sin(alpha1), cos(q2) * sin(alpha1), cos(alpha1), cos(alpha1) * d2],
                    [0, 0, 0, 1]])
 
     T2_3 = Matrix([[cos(q3), -sin(q3), 0, a2],
                    [sin(q3) * cos(alpha2), cos(q3) * cos(alpha2), -sin(alpha2), -sin(alpha2) * d3],
-                   [sin(q3) * cos(alpha2), cos(q3) * sin(alpha2), cos(alpha2), cos(alpha2) * d3],
+                   [sin(q3) * sin(alpha2), cos(q3) * sin(alpha2), cos(alpha2), cos(alpha2) * d3],
                    [0, 0, 0, 1]])
 
     T3_4 = Matrix([[cos(q4), -sin(q4), 0, a3],
                    [sin(q4) * cos(alpha3), cos(q4) * cos(alpha3), -sin(alpha3), -sin(alpha3) * d4],
-                   [sin(q4) * cos(alpha3), cos(q4) * sin(alpha3), cos(alpha3), cos(alpha3) * d4],
+                   [sin(q4) * sin(alpha3), cos(q4) * sin(alpha3), cos(alpha3), cos(alpha3) * d4],
                    [0, 0, 0, 1]])
 
     T4_5 = Matrix([[cos(q5), -sin(q5), 0, a4],
                    [sin(q5) * cos(alpha4), cos(q5) * cos(alpha4), -sin(alpha4), -sin(alpha4) * d5],
-                   [sin(q5) * cos(alpha4), cos(q5) * sin(alpha4), cos(alpha4), cos(alpha4) * d5],
+                   [sin(q5) * sin(alpha4), cos(q5) * sin(alpha4), cos(alpha4), cos(alpha4) * d5],
                    [0, 0, 0, 1]])
 
     T5_6 = Matrix([[cos(q6), -sin(q6), 0, a5],
                    [sin(q6) * cos(alpha5), cos(q6) * cos(alpha5), -sin(alpha5), -sin(alpha5) * d6],
-                   [sin(q6) * cos(alpha5), cos(q6) * sin(alpha5), cos(alpha5), cos(alpha5) * d6],
+                   [sin(q6) * sin(alpha5), cos(q6) * sin(alpha5), cos(alpha5), cos(alpha5) * d6],
                    [0, 0, 0, 1]])
 
     T6_G = Matrix([[cos(q7), -sin(q7), 0, a6],
                    [sin(q7) * cos(alpha6), cos(q7) * cos(alpha6), -sin(alpha6), -sin(alpha6) * d7],
-                   [sin(q7) * cos(alpha6), cos(q7) * sin(alpha6), cos(alpha6), cos(alpha6) * d7],
+                   [sin(q7) * sin(alpha6), cos(q7) * sin(alpha6), cos(alpha6), cos(alpha6) * d7],
                    [0, 0, 0, 1]])
 
     R_total = r_x(yaw) * r_y(pitch) * r_z(roll)
     R_corr = r_y(+np.pi/2) * r_x(-np.pi)
-    R_rpy = R_total * R_corr
 
     p = Matrix([[px], [py], [pz]])
     n = Matrix([[0], [0], [d7]])
 
-    wc = simplify(p - R_rpy * n).subs(s)
+    wc = simplify(p - R_total * R_corr * n).subs(s)
 
     p_wc = (float(wc[0]), float(wc[1]), float(wc[2]))
 
@@ -209,25 +213,42 @@ def test_code(test_case):
     print('theta32: ', theta32)
 
     theta3 = (pi / 2 + theta31 - theta32).subs(s)
-    print('theta3: ', theta3)
 
-    R0_3 = (T0_1 * T1_2 * T2_3)[:3, :3]
-    R0_3t = R0_3.transpose()
+    R0_3 = simplify(T0_1.subs(s) * T1_2.subs(s) * T2_3.subs(s))[:3, :3]
+    R0_3t = R0_3.transpose().subs({q1: theta1,
+                                   q2: theta2,
+                                   q3: theta3})
 
-    lhs = R3_6 = (T3_4 * T4_5 * T5_6)[:3, :3]
-
-    rhs = simplify(R0_3t * R_rpy).subs(s).subs({q1: theta1,
-                                                q2: theta2,
-                                                q3: theta3})
     print('---------')
-    print(lhs.subs(s))
-    print(rhs)
 
-    print(solve(lhs - rhs, [q4, q5, q6]))
+    lhs = (T3_4 * T4_5 * T5_6).subs(s)[:3, :3]
+    pprint(simplify(lhs))
 
-    theta4 = 0
-    theta5 = 0
-    theta6 = 0
+    rhs = R0_3t * R_total * R_corr
+    pprint(rhs)
+
+    # alpha, beta, gamma = tf.transformations.euler_from_matrix(np.array(rhs).astype(np.float64), "ryzy")
+    # print(yaw, pitch, roll)
+    # print(alpha, beta, gamma)
+
+    r11 = rhs[0,0]
+    r12 = rhs[0,1]
+    r13 = rhs[0,2]
+    r21 = rhs[1,0]
+    r22 = rhs[1,1]
+    r23 = rhs[1,2]
+    r31 = rhs[2,0]
+    r32 = rhs[2,1]
+    r33 = rhs[2,2]
+
+    theta5 = atan2(sqrt(r21**2 * r22**2), r23)
+    print(theta5)
+
+    theta6 = atan2(r22, -r21)
+    print(theta6)
+
+    theta4 = atan2(-r33, r13)
+    print(theta4)
 
     ##
     ########################################################################################
