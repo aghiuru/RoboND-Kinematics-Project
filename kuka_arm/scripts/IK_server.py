@@ -111,6 +111,21 @@ def handle_calculate_IK(req):
                 [req.poses[x].orientation.x, req.poses[x].orientation.y,
                     req.poses[x].orientation.z, req.poses[x].orientation.w])
 
+            def r_x(a):
+                return Matrix([[cos(a), -sin(a), 0],
+                               [sin(a),  cos(a), 0],
+                               [     0,       0, 1]])
+
+            def r_y(a):
+                return Matrix([[ cos(a), 0, sin(a)],
+                               [      0, 1,      0],
+                               [-sin(a), 0, cos(a)]])
+
+            def r_z(a):
+                return Matrix([[ 1,      0,       0],
+                               [ 0, cos(a), -sin(a)],
+                               [ 0, sin(a),  cos(a)]])
+
             # Calculate joint angles using Geometric IK method
             R_total = r_x(yaw) * r_y(pitch) * r_z(roll)
             R_corr = r_y(+np.pi/2) * r_x(-np.pi)
@@ -130,13 +145,13 @@ def handle_calculate_IK(req):
             o2 = (cos(theta1) * a1, sin(theta1) * a1, d1)
             print('O2: ', o2)
 
-            d_xy = sqrt((wc[0] - o2[0])**2 + (wc[1] - o2[1])**2)
-            print('d_xy: ', d_xy)
+            f = sqrt((wc[0] - o2[0])**2 + (wc[1] - o2[1])**2)
+            print('f: ', f)
 
-            theta_21 = atan2(wc[2] - o2[2], d_xy)
+            theta_21 = atan2(wc[2] - o2[2], f)
             print('theta_21: ', theta_21)
 
-            c = sqrt((wc[2] - o2[2])**2 + d_xy**2)
+            c = sqrt((wc[2] - o2[2])**2 + f**2)
             print('c: ', c)
 
             b = sqrt(a3**2 + d4**2)
@@ -146,7 +161,7 @@ def handle_calculate_IK(req):
 
             # Find O3
             o3z = o2[2] + sin(theta_21 + theta_22) * a2
-            print('o3z: ', o3z)
+            print('O3z: ', o3z)
 
             theta2 = (pi / 2 - theta_21 - theta_22).subs(s)
             print('theta2: ', theta2)
